@@ -1,13 +1,30 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js'
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0Mzc1ODQxOCwiZXhwIjoxOTU5MzM0NDE4fQ.y_1WLF3giPmHBAaw338CK-dXEH0fn2-C5kESDNdAnhE';
+const SUPABASE_URL = 'https://xsyvqceqsisxlmcwtlfc.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 export default function ChatPage() {
+
     // Sua lógica vai aqui
     const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
-    /*
+    React.useEffect(() => {
+            const dadosDoSupabase = supabaseClient
+            .from('mensagens')
+            .select('*')
+            .order('id', {ascending: false})
+            .then(({ data }) => {
+                console.log("Dados da consulta: ", data);
+                setListaDeMensagens(data);
+            });    
+            console.log(dadosDoSupabase);
+    }, []);
+   /*
     // Usuário
     - Usuário digita no campo textarea
     - Aperta enter para enviar
@@ -20,15 +37,21 @@ export default function ChatPage() {
     */
     function handleNovaMensagem(novaMensagem) {
         const mensagem = {
-            id: listaDeMensagens.length + 1,
-            de: 'matheus-fs-campos',
+            de: 'alura',
             texto: novaMensagem,
         };
 
-        setListaDeMensagens([
-            mensagem,
-            ...listaDeMensagens,
-        ]);
+        supabaseClient
+            .from('mensagens')
+            .insert([
+                mensagem
+            ])
+            .then(({ data })=> {
+                setListaDeMensagens([
+                    data[0],
+                    ...listaDeMensagens
+                ]);
+            });
         setMensagem('');
     }
 

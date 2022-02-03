@@ -70,7 +70,7 @@ export default function PaginaInicial() {
             onSubmit = {function (infosDoEvento){
                 infosDoEvento.preventDefault();
                 console.log("O formulario foi submetido");
-                roteamento.push("/chat");
+                roteamento.push(`/chat?username=${username}`);
                 //Navegação padrão do navegador:
                 //window.location.href = "/chat";
             }}
